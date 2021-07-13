@@ -35,10 +35,11 @@
             <input type="password" placeholder="Password" v-model="password">
             <password class="icon"/>
           </div> 
+          <div class="error" v-show="error">{{this.errorMsg}}</div>
 
         </div>
 
-        <button>Sign Up</button>
+        <button @click.prevent="register">Sign Up</button>
 
          <div class="angle"></div>
          
@@ -56,6 +57,10 @@ import email from '../assets/Icons/envelope-regular.svg';
 import password from '../assets/Icons/lock-alt-solid.svg';
 import user from '../assets/Icons/user-alt-light.svg';
 
+import firebase from "firebase/app";
+import "firebase/auth";
+import db from "../firebase/firebaseInit";
+
 export default {
     name:"Register",
     components: {
@@ -65,11 +70,47 @@ export default {
     },
     data(){
         return{
-            firstname:null,
-            lastname:null,
-            username:null,
-            email:null,
-            password:null,
+            firstname:"",
+            lastname:"",
+            username:"",
+            email:"",
+            password:"",
+            error:"",
+            errorMsg:""
+        }
+    },
+    methods: {
+        async register(){
+            let objects = [this.email, this.password, this.firstname,this.lastname,this.username]
+            if(this.isWritten(objects)){
+                this.error = false;
+                this.errorMsg = "";
+
+                const firebaseAuth = await firebase.auth();
+                const createUser = await firebaseAuth.createUserWithEmailAndPassword(this.email,this.password);
+                const result = await createUser;
+                const database = db.collection("users").doc(result.user.uid);
+                await database.set({
+                    firstname: this.firstname,
+                    lastname:this.lastname,
+                    username:this.username,
+                    email:this.email,
+                });
+                this.$router.push({name:"Home"});
+
+                return;
+            }
+            this.error = true;
+            this.errorMsg = "please fill out all the field";
+            return;
+        },
+        isWritten(objects){
+            for(let i =0;i<objects.length;i++){
+                if(objects[i] === ""){
+                    return false;
+                }
+            }
+            return true;
         }
     }
 
