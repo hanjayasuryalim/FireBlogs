@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 import firebase from "firebase/app";
 import "firebase/auth";
 import db from "../firebase/firebaseInit";
+import {FUNCTIONS} from './variables';
 
 Vue.use(Vuex)
 
@@ -49,6 +50,35 @@ export default new Vuex.Store({
             const dbResults = await dataBase.get();
             commit("setProfileInfo",dbResults);
             commit("setProfileInitials");
+        }
+    },
+    getters:{
+        [FUNCTIONS.GET_SAMPLE_BLOG_CARDS](state){
+            return state.sampleBlogCards;
+        },
+        [FUNCTIONS.GET_EDIT_POST](state){
+            return state.editPost;
+        },
+        [FUNCTIONS.GET_USER](state){
+            return state.user;
+        },
+        [FUNCTIONS.GET_PROFILE_EMAIL](state){
+            return state.profileEmail;
+        },
+        [FUNCTIONS.GET_FIRST_NAME](state){
+            return state.profileFirstName;
+        },
+        [FUNCTIONS.GET_LAST_NAME](state){
+            return state.profileLastName;
+        },
+        [FUNCTIONS.GET_USERNAME](state){
+            return state.profileUsername;
+        },
+        [FUNCTIONS.GET_ID](state){
+            return state.profileId;
+        },
+        [FUNCTIONS.GET_INITIAL](state){
+            return state.profileInitials;
         }
     },
     modules: {

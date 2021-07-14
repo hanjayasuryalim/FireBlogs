@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <BlogPost :post="welcomeScreen"/>
+    <BlogPost v-if="!user" :post="welcomeScreen"/>
     <BlogPost v-for="(post,index) in sampleBlogPost" :key="index" :post="post"/>
     <div class="blog-card-wrap">
         <div class="container">
@@ -11,7 +11,7 @@
         </div>
     </div>
 
-    <div class="updates">
+    <div class="updates" v-if="!user">
         <div class="container">
             <h2>Never miss a post. Register your free acount today!</h2>
             <router-link class="router-button" to="#">
@@ -26,6 +26,8 @@
 import BlogPost from '../components/BlogPost.vue'
 import BlogCard from '../components/BlogCard.vue'
 import Arrow from "../assets/Icons/arrow-right-light.svg"
+import {mapGetters} from 'vuex';
+import {FUNCTIONS} from "@/store/variables";
 export default {
     name: "Home",
     components: {
@@ -57,9 +59,10 @@ export default {
         }
     },
     computed:{
-        sampleBlogCards(){
-            return this.$store.state.sampleBlogCards;
-        }
+        ...mapGetters({
+            sampleBlogCards:FUNCTIONS.GET_SAMPLE_BLOG_CARDS,
+            user:FUNCTIONS.GET_USER,
+        })
     }
 };
 </script>

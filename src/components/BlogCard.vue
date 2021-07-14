@@ -27,6 +27,8 @@
 import Arrow from '../assets/Icons/arrow-right-light.svg';
 import Edit from '../assets/Icons/edit-regular.svg';
 import Delete from '../assets/Icons/trash-regular.svg';
+import {mapGetters} from 'vuex';
+import {FUNCTIONS} from '../store/variables'
 
 export default {
     name:"blogCard",
@@ -37,9 +39,11 @@ export default {
         Delete,
     },
     computed:{
-        editPost(){
-            return this.$store.state.editPost;
-        }
+        ...mapGetters(
+            {
+                editPost:FUNCTIONS.GET_EDIT_POST
+            }
+        ),
     },
     beforeDestroy(){
         this.$store.commit('toggleEditPost',false)

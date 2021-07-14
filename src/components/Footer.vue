@@ -41,6 +41,8 @@ import youTube from '../assets/Icons/youtube-brands.svg';
 import twitter from '../assets/Icons/twitter-brands.svg';
 import instagram from '../assets/Icons/instagram-brands.svg';
 import linkedin from '../assets/Icons/linkedin-brands.svg';
+import {mapGetters} from 'vuex';
+import {FUNCTIONS} from "@/store/variables";
 
 export default {
     name:'footer-vue',
@@ -49,6 +51,11 @@ export default {
         twitter,
         instagram,
         linkedin,
+    },
+    computed:{
+        ...mapGetters({
+            user:FUNCTIONS.GET_USER,
+        })
     }
 }
 </script>

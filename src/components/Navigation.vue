@@ -9,8 +9,44 @@
                     <router-link class="link" :to="{name:'Home'}">Home</router-link>
                     <router-link class="link" :to="{name: 'Blogs'}">Blogs</router-link>
                     <router-link class="link" to="#">Create Post</router-link>
-                    <router-link class="link" :to="{name:'Login'}">Login/Register</router-link>
+                    <router-link v-if="!user" class="link" :to="{name:'Login'}">Login/Register</router-link>
                 </ul>
+
+              <div v-show="user" @click="toggleProfileNavigation" class="profile" ref="profile">
+                <span>{{initials}}</span>
+
+                <div v-show="profileNavigation" class="profile-menu">
+
+                  <div class="info">
+                    <p class="initials">{{initials}}</p>
+                    <div class="right">
+                      <p>{{firstName}} {{lastName}}</p>
+                      <p>{{username}}</p>
+                      <p>{{email}}</p>
+                    </div>
+                  </div>
+
+                  <div class="options">
+                    <router-link class="option" to="#">
+                      <userIcon class="icon"/>
+                      <p>Profile</p>
+                    </router-link>
+
+                    <router-link class="option" to="#">
+                      <adminIcon class="icon"/>
+                      <p>Admin</p>
+                    </router-link>
+
+                    <div @click="signOut" class="option">
+                      <signOutIcon class="icon"/>
+                      <p>Sign Out</p>
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </div>
             </div>
         </nav>
             <menuIcon @click="toggleMobileNav" class="menu-icon" v-show="mobile"/>
@@ -19,7 +55,7 @@
                     <router-link class="link" :to="{name:'Home'}">Home</router-link>
                     <router-link class="link" :to="{name: 'Blogs'}">Blogs</router-link>
                     <router-link class="link" to="#">Create Post</router-link>
-                    <router-link class="link" :to="{name:'Login'}">Login/Register</router-link>
+                    <router-link class="link" v-if="!user" :to="{name:'Login'}">Login/Register</router-link>
                 </ul>
             </transition>
        
@@ -27,15 +63,26 @@
 </template>
 
 <script>
-import menuIcon from '../assets/Icons/bars-regular.svg'
+import menuIcon from '../assets/Icons/bars-regular.svg';
+import {mapGetters} from 'vuex';
+import {FUNCTIONS} from "@/store/variables";
+import userIcon from '../assets/Icons/user-alt-light.svg';
+import adminIcon from '../assets/Icons/user-crown-light.svg';
+import signOutIcon from '../assets/Icons/sign-out-alt-regular.svg';
+import firebase from "firebase/app";
+import "firebase/auth";
 
 export default {
     name:'navigation',
     components:{
-        menuIcon
+        menuIcon,
+        userIcon,
+        adminIcon,
+        signOutIcon,
     },
     data(){
         return{
+            profileNavigation:null,
             mobile: null,
             mobileNav: null,
             windowWidth:null,
@@ -51,6 +98,16 @@ export default {
         window.addEventListener('resize',this.checkScreen);
         this.checkScreen();
     },
+    computed:{
+        ...mapGetters({
+            initials:FUNCTIONS.GET_INITIAL,
+            firstName:FUNCTIONS.GET_FIRST_NAME,
+            lastName:FUNCTIONS.GET_LAST_NAME,
+            email:FUNCTIONS.GET_PROFILE_EMAIL,
+            username:FUNCTIONS.GET_USERNAME,
+            user:FUNCTIONS.GET_USER,
+        })
+    },
     methods:{
         checkScreen(){
             this.windowWidth = window.innerWidth;
@@ -62,9 +119,17 @@ export default {
             this.mobileNav = false;
             return;
         },
-
         toggleMobileNav() {
             this.mobileNav = !this.mobileNav;
+        },
+        toggleProfileNavigation(e){
+            if(e.target === this.$refs.profile) {
+                this.profileNavigation = !this.profileNavigation;
+            }
+        },
+        async signOut(){
+            firebase.auth().signOut();
+            window.location.reload();
         }
     }
 
@@ -120,6 +185,89 @@ export default {
                         margin-right:0;
                     }
 
+                }
+
+                .profile{
+                  position:relative;
+                  cursor:pointer;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  width: 40px;
+                  height:40px;
+                  border-radius: 50%;
+                  color:#fff;
+                  background-color: #303030;
+
+                  span{
+                    pointer-events: none;
+                  }
+                  .profile-menu{
+                    position: absolute;
+                    top:60px;
+                    right:0;
+                    width: 250px;
+                    background-color: #303030;
+                    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+
+                    .info{
+                      display: flex;
+                      align-items: center;
+                      padding: 15px;
+                      border-bottom: 1px solid #fff;
+
+                      .initials{
+                        position:initial;
+                        width: 40px;
+                        height:40px;
+                        background-color: #fff;
+                        color:#303030;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        border-radius: 50%;
+                      }
+
+                      .right{
+                        flex:1;
+                        margin-left:24px;
+
+                        p:nth-child(1){
+                          font-size: 14px;
+                        }
+
+                        p:nth-child(2),
+                        p:nth-child(3){
+                          font-size: 12px;
+                        }
+                      }
+                    }
+
+                    .options{
+                      padding:15px;
+                      .option{
+                        text-decoration: none;
+                        color:#fff;
+                        display:flex;
+                        align-items: center;
+                        margin-bottom:12px;
+
+                        .icon{
+                          width:18px;
+                          height:auto;
+                        }
+
+                        p{
+                          font-size:14px;
+                          margin-left:12px;
+                        }
+
+                        &:last-child{
+                          margin-bottom:0px;
+                        }
+                      }
+                    }
+                  }
                 }
             }
         }

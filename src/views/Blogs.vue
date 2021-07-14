@@ -15,6 +15,8 @@
 
 <script>
 import BlogCard from '../components/BlogCard.vue'
+import {FUNCTIONS} from "@/store/variables";
+import {mapGetters} from 'vuex';
 
 export default {
     name: "blogs",
@@ -22,9 +24,11 @@ export default {
         BlogCard,
     },
     computed:{
-        sampleBlogCards(){
-            return this.$store.state.sampleBlogCards;
-        },
+        ...mapGetters(
+            {
+                sampleBlogCards:FUNCTIONS.GET_SAMPLE_BLOG_CARDS,
+            }
+        ),
         editPost:{
             get(){
                 return this.$store.state.editPost;
